@@ -1,0 +1,36 @@
+mail_sorter/
+│
+├── data/
+│   ├── inbox/               (100 исходных писем .txt)
+│   ├── processed/           (создаётся автоматически, внутри папки категорий)
+│   ├── config/              (пользовательские настройки)
+│   │   └── categories.json  (определяет категории и правила)
+│   └── reports/             (результаты работы)
+│       ├── summary.txt
+│       └── log.txt
+│
+├── src/
+│   ├── __init__.py
+│   ├── parser.py            # чтение .txt/.eml, извлечение полей
+│   ├── cleaner.py           # приведение текста к нижнему регистру, удаление мусора
+│   ├── classifier.py        # загрузка правил из config, применение к письму
+│   ├── file_manager.py      # перемещение файлов, создание папок
+│   ├── reporter.py          # генерация отчётов
+│   └── main.py              # оркестрация всего пайплайна
+│
+├── extensions/              # для оценки 9-10 (расширения)
+│   ├── config_gui.py        # простой GUI для настройки категорий (tkinter или просто input)
+│   ├── fusualize.py         # простой GUI для графического вывода summary
+│   ├── ml_enhancer.py       # опциональный ML-классификатор (TF‑IDF + LogisticRegression)
+│   └── llm_helper.py        # при желании: запрос к ChatGPT для генерации синонимов
+│
+├── tests/
+│   ├── test_parser.py
+│   ├── test_classifier.py
+│   ├── test_file_manager.py
+│   └── fixtures/            # тестовые письма (5-10 штук)
+│
+├── run.sh                   # bash-скрипт запуска
+├── requirements.txt         # зависимости (без ML для базы, но с опцией)
+├── README.md
+└── .gitignore
