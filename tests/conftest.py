@@ -12,6 +12,9 @@ if str(BASE_DIR) not in sys.path:
 if (BASE_DIR / "src").exists() and str(BASE_DIR / "src") not in sys.path:
     sys.path.insert(0, str(BASE_DIR / "src"))
 
+from src.classifier import MailClassifier
+from src.file_manager import FileManager
+
 @pytest.fixture
 def sample_categories():
     return {
