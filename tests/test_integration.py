@@ -7,7 +7,7 @@ class TestIntegration:
     def test_full_pipeline_spam(self, tmp_path, classifier_with_config):
         f = tmp_path / "promo.txt"
         f.write_text(
-            "Subject: Rasprodazha slonov!\n\nAkcija besplatno tolko segodnja geekbrains skidki dlya vas",
+            "Subject: Rasprodazha slonov!\n\nAkcija besplatno tolko segodnja VWB skidki dlya vas",
             encoding="utf-8"
         )
         raw = parse_file(str(f))
