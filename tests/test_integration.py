@@ -33,3 +33,4 @@ class TestIntegration:
         cleaned = process_raw_email(raw, f.name)
         out = classifier_with_config.classify(cleaned)
         assert out["category"] == "other"
+
