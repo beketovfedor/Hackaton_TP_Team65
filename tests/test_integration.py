@@ -1,3 +1,5 @@
+from src.processing.parser import parse_file
+from src.processing.cleaner import process_raw_email
 from pathlib import Path
 from src.parser import parse_file
 from src.cleaner import process_raw_email
@@ -7,7 +9,7 @@ class TestIntegration:
     def test_full_pipeline_spam(self, tmp_path, classifier_with_config):
         f = tmp_path / "promo.txt"
         f.write_text(
-            "Subject: Rasprodazha slonov!\n\nAkcija besplatno tolko segodnja VWB skidki dlya vas",
+            "Subject: Rasprodazha slonov!\n\nAkcija besplatno tolko segodnja geekbrains skidki dlya vas",
             encoding="utf-8"
         )
         raw = parse_file(str(f))
@@ -33,4 +35,3 @@ class TestIntegration:
         cleaned = process_raw_email(raw, f.name)
         out = classifier_with_config.classify(cleaned)
         assert out["category"] == "other"
-

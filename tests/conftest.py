@@ -2,6 +2,8 @@ import json
 import pytest
 from pathlib import Path
 from unittest.mock import patch
+from src.analyzer.classifier import MailClassifier
+from src.analyzer.file_manager import FileManager
 import sys
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -80,4 +82,3 @@ def file_manager(tmp_path):
     fm.processed_dir = tmp_path / "data" / "processed"
     fm.processed_dir.mkdir(parents=True, exist_ok=True)
     return fm
-

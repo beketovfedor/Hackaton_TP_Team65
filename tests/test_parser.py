@@ -1,4 +1,6 @@
 import pytest
+from src.processing.parser import parse_file
+
 from pathlib import Path
 from src.parser import parse_file, _is_text_file
 
