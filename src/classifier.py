@@ -1,6 +1,8 @@
 import json
 from pathlib import Path
 
+from reporter import Reporter
+
 
 class MailClassifier:
     def __init__(self):
@@ -79,6 +81,9 @@ class MailClassifier:
 
         result = self.make_result(category_name=best_category, category_score=best_category_score,
                                   matched_keywords=best_matched_keywords, theme_matches_count=best_theme_matches_count)
+
+        Reporter.add_category(result["category"])
+        Reporter.add_keywords(result["matched_keywords"]) #Проверить правильно ли работает
 
         result["mail_name"] = mail_name
 
