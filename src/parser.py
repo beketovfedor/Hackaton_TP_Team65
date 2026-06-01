@@ -1,11 +1,3 @@
-"""
-Модуль для безопасного чтения файлов писем.
-
-Предоставляет единственную функцию:
-- parse_file() — читает любой текстовый файл и возвращает его содержимое как строку,
-  либо None, если файл бинарный, повреждён, слишком большой или не существует.
-"""
-
 import os
 from typing import Optional
 
@@ -15,10 +7,7 @@ text_types = {
     '.xml', '.yaml', '.yml', '.cfg', '.ini'
 }
 
-# Максимальный размер файла (2 МБ)
 MAX_FILE_SIZE = 2 * 1024 * 1024
-
-
 def _is_text_file(filepath: str) -> bool:
 
     ext = os.path.splitext(filepath)[1].lower()
@@ -35,14 +24,7 @@ def _is_text_file(filepath: str) -> bool:
         return False
 
 
-def parse_file(filepath: str) -> Optional[str]:
-    """
-    Читает файл и возвращает его полное текстовое содержимое.
-    Для .eml-файлов возвращается сырой текст со всеми служебными заголовками.
-    Для всех остальных текстовых — содержимое как есть.
-    Если файл невозможно прочитать (не существует, бинарный, слишком большой,
-    повреждённый), возвращает None.
-    """
+def parse_file(filepath):
     if not os.path.isfile(filepath):
         return None
 
