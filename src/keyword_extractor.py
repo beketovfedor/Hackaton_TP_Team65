@@ -3,11 +3,12 @@ from pathlib import Path
 
 
 class KeywordExtractor:
-    def __init__(self, min_word_length=4, min_total_count=2, min_mail_count=2, max_mail_part=0.8):
+    def __init__(self, min_word_length=4, min_total_count=2, min_mail_count=2, max_mail_part=0.8, theme_weight=3):
         self.min_word_length = min_word_length
         self.min_total_count = min_total_count
         self.min_mail_count = min_mail_count
         self.max_mail_part = max_mail_part
+        self.theme_weight = theme_weight
 
     def extract_keywords(self, cleaned_mails):
         word_stats = {}
@@ -15,12 +16,17 @@ class KeywordExtractor:
         total_mails = len(cleaned_mails)
 
         for mail in cleaned_mails:
-            file_name = mail.get("file_name", "")
-            text = mail.get("text", "")
-            words = self.get_words_from_text(text)
-            phrases = self.get_phrases_from_words(words)
-            self.add_items_to_stats(words, file_name, word_stats)
-            self.add_items_to_stats(phrases, file_name, phrase_stats)
+            file_name = mail.get("mail_name", "")
+            theme_text = mail.get("mail_theme", "")
+            body_text = mail.get("mail_txt", "")
+            theme_words = self.get_words_from_text(theme_text)
+            body_words = self.get_words_from_text(body_text)
+            theme_phrases = self.get_phrases_from_words(theme_words)
+            body_phrases = self.get_phrases_from_words(body_words)
+            self.add_items_to_stats(theme_words, file_name, word_stats, is_from_theme=True)
+            self.add_items_to_stats(body_words, file_name, word_stats, is_from_theme=False)
+            self.add_items_to_stats(theme_phrases, file_name, phrase_stats, is_from_theme=True)
+            self.add_items_to_stats(body_phrases, file_name, phrase_stats, is_from_theme=False)
 
         words_result = self.prepare_result(word_stats, total_mails)
         phrases_result = self.prepare_result(phrase_stats, total_mails)
@@ -56,21 +62,29 @@ class KeywordExtractor:
 
         return phrases
 
-    def add_items_to_stats(self, items, file_name, statistics):
+    def add_items_to_stats(self, items, file_name, statistics, is_from_theme):
         for item in items:
             if item not in statistics:
                 statistics[item] = {
                     "total_count": 0,
+                    "theme_count": 0,
+                    "body_count": 0,
                     "files": set()
                 }
             statistics[item]["total_count"] += 1
             statistics[item]["files"].add(file_name)
+            if is_from_theme:
+                statistics[item]["theme_count"] += 1
+            else:
+                statistics[item]["body_count"] += 1
 
     def prepare_result(self, statistics, total_mails):
         result = []
 
         for keyword in statistics:
             total_count = statistics[keyword]["total_count"]
+            theme_count = statistics[keyword]["theme_count"]
+            body_count = statistics[keyword]["body_count"]
             files = statistics[keyword]["files"]
             mail_count = len(files)
             if total_count < self.min_total_count:
@@ -80,11 +94,15 @@ class KeywordExtractor:
             mail_part = mail_count / total_mails
             if mail_part > self.max_mail_part:
                 continue
-            score = total_count + mail_count * 2
+            weighted_count = body_count + theme_count * self.theme_weight
+            score = weighted_count + mail_count * 2
             result.append({
                 "keyword": keyword,
                 "total_count": total_count,
+                "theme_count": theme_count,
+                "body_count": body_count,
                 "mail_count": mail_count,
+                "weighted_count": weighted_count,
                 "score": score,
                 "examples": sorted(list(files))[:10]
             })
