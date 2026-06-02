@@ -1,16 +1,14 @@
 import json
 import sys
 from pathlib import Path
-
+from src.processing.parser import parse_file
+from src.processing.cleaner import process_raw_email
 from .theme import CATEGORY_ICONS
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-
-from src.processing.parser import parse_file
-from src.processing.cleaner import process_raw_email
 
 PROCESSED_DIR = BASE_DIR / "data" / "processed"
 CATEGORIES_PATH = BASE_DIR / "data" / "config" / "categories.json"

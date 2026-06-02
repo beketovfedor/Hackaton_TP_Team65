@@ -1,12 +1,11 @@
 import sys
 import traceback
 from pathlib import Path
+from extensions.visualizer.main_interface.tk_viewer import MailViewer
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
-
-from extensions.visualizer.main_interface.tk_viewer import MailViewer
 
 
 def main():
