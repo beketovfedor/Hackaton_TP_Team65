@@ -6,10 +6,13 @@ echo "===================================="
 echo " Запуск сортировщика писем"
 echo "===================================="
 
-PROJECT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+
 LOG_DIR="$PROJECT_DIR/logs"
 LOG_FILE="$LOG_DIR/app.log"
 
+echo "Папка скрипта: $SCRIPT_DIR"
 echo "Проект: $PROJECT_DIR"
 
 mkdir -p "$LOG_DIR"
@@ -36,10 +39,12 @@ fi
 
 mkdir -p "$PROJECT_DIR/data/processed"
 
-if [ -f "$PROJECT_DIR/.venv/bin/python" ]; then
-    PYTHON="$PROJECT_DIR/.venv/bin/python"
-elif [ -f "$PROJECT_DIR/.venv/Scripts/python.exe" ]; then
+if [ -f "$PROJECT_DIR/.venv/Scripts/python.exe" ]; then
     PYTHON="$PROJECT_DIR/.venv/Scripts/python.exe"
+elif [ -f "$PROJECT_DIR/.venv/bin/python" ]; then
+    PYTHON="$PROJECT_DIR/.venv/bin/python"
+elif command -v python >/dev/null 2>&1; then
+    PYTHON="python"
 else
     PYTHON="python3"
 fi
