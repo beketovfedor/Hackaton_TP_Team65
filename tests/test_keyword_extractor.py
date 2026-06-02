@@ -1,5 +1,5 @@
 import pytest
-from src.keyword_extractor import KeywordExtractor
+from src.analyzer.keyword_extractor import KeywordExtractor
 
 class Test_Keyword_Extractor:
 

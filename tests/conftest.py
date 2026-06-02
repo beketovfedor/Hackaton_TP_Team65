@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 import pytest
 
-from src.classifier import MailClassifier
-from src.file_manager import FileManager
+from src.analyzer.classifier import MailClassifier
+from src.analyzer.file_manager import FileManager
 
 
 @pytest.fixture

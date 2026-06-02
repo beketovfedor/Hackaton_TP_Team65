@@ -1,4 +1,4 @@
-from src.parser import parse_file
+from src.processing.parser import parse_file
 
 
 class TestParser:

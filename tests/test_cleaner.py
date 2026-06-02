@@ -1,6 +1,6 @@
 import pytest
-import src.cleaner as cleaner
-from src.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
+import src.processing.cleaner as cleaner
+from src.processing.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
 
 
 @pytest.fixture(autouse=True)

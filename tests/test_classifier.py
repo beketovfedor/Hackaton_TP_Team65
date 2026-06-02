@@ -1,4 +1,4 @@
-from src.classifier import MailClassifier
+from src.analyzer.classifier import MailClassifier
 
 
 def test_classify_unreadable(classifier_with_config):
