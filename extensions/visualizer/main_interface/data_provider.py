@@ -2,17 +2,15 @@ import json
 import sys
 from pathlib import Path
 
-from extensions.visualizer.main_interface.theme import CATEGORY_ICONS
+from .theme import CATEGORY_ICONS
 
-
-BASE_DIR = Path(__file__).resolve().parents[2]
+BASE_DIR = Path(__file__).resolve().parents[3]
 
 if str(BASE_DIR) not in sys.path:
     sys.path.insert(0, str(BASE_DIR))
 
 from src.processing.parser import parse_file
 from src.processing.cleaner import process_raw_email
-
 
 PROCESSED_DIR = BASE_DIR / "data" / "processed"
 CATEGORIES_PATH = BASE_DIR / "data" / "config" / "categories.json"
@@ -36,7 +34,7 @@ def find_category_by_folder(folder_name, categories_config):
     return folder_name, {
         "folder": folder_name,
         "title": folder_name,
-        "priority": 0
+        "priority": 0,
     }
 
 
@@ -45,7 +43,6 @@ def has_attachment(raw_text):
         return False
 
     text = raw_text.lower()
-
     markers = [
         "вложение",
         "во вложении",
@@ -59,7 +56,7 @@ def has_attachment(raw_text):
         ".jpg",
         "invoice",
         "contract",
-        "screenshot"
+        "screenshot",
     ]
 
     for marker in markers:
@@ -91,11 +88,10 @@ def get_mail_info(file_path, category_name, folder_name):
             "has_attachment": False,
             "size_kb": get_file_size_kb(file_path),
             "category": category_name,
-            "folder": folder_name
+            "folder": folder_name,
         }
 
     cleaned_mail = process_raw_email(raw_text, file_path.name)
-
     subject = cleaned_mail.get("subject", "") or cleaned_mail.get("mail_theme", "")
 
     return {
@@ -109,7 +105,7 @@ def get_mail_info(file_path, category_name, folder_name):
         "has_attachment": has_attachment(raw_text),
         "size_kb": get_file_size_kb(file_path),
         "category": category_name,
-        "folder": folder_name
+        "folder": folder_name,
     }
 
 
@@ -125,20 +121,12 @@ def get_viewer_data():
             continue
 
         folder_name = folder_path.name
-        category_name, category_data = find_category_by_folder(
-            folder_name,
-            categories_config
-        )
-
+        category_name, category_data = find_category_by_folder(folder_name, categories_config)
         mails = []
 
         for file_path in sorted(folder_path.iterdir()):
-            if not file_path.is_file():
-                continue
-
-            mails.append(
-                get_mail_info(file_path, category_name, folder_name)
-            )
+            if file_path.is_file():
+                mails.append(get_mail_info(file_path, category_name, folder_name))
 
         categories.append({
             "id": category_name,
@@ -147,7 +135,7 @@ def get_viewer_data():
             "priority": category_data.get("priority", 0),
             "icon": CATEGORY_ICONS.get(category_name, "□"),
             "count": len(mails),
-            "mails": mails
+            "mails": mails,
         })
 
     return categories

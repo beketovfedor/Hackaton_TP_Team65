@@ -1,81 +1,51 @@
-import json
-import pytest
-from pathlib import Path
-from unittest.mock import patch
-from src.analyzer.classifier import MailClassifier
-from src.analyzer.file_manager import FileManager
-import sys
+from src.classifier import MailClassifier
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-if str(BASE_DIR) not in sys.path:
-    sys.path.insert(0, str(BASE_DIR))
-if (BASE_DIR / "src").exists() and str(BASE_DIR / "src") not in sys.path:
-    sys.path.insert(0, str(BASE_DIR / "src"))
 
-@pytest.fixture
-def sample_categories():
-    return {
-        "default_category": "other",
-        "unreadable_category": "unreadable",
-        "min_category_score": 1,
-        "theme_weight": 2,
-        "categories": {
-            "spam": {
-                "folder": "spam",
-                "title": "Спам",
-                "priority": 1,
-                "keywords": ["купить", "скидка", "акция", "бесплатно"]
-            },
-            "critical": {
-                "folder": "critical",
-                "title": "Критические инциденты",
-                "priority": 3,
-                "keywords": ["сервер упал", "ошибка", "недоступен", "срочно"]
-            },
-            "support": {
-                "folder": "support",
-                "title": "Поддержка",
-                "priority": 2,
-                "keywords": ["помогите", "не работает", "проблема", "заявка"]
-            },
-            "other": {
-                "folder": "other",
-                "title": "Прочее",
-                "priority": 0,
-                "keywords": []
-            },
-            "unreadable": {
-                "folder": "unreadable",
-                "title": "Нечитаемые",
-                "priority": 0,
-                "keywords": []
-            }
-        }
+def test_classify_unreadable(classifier_with_config):
+    result = classifier_with_config.classify(None)
+    assert result["category"] == "unreadable"
+    assert result["category_score"] == 0
+
+
+def test_classify_by_body_keyword(classifier_with_config):
+    mail = {
+        "mail_name": "mail_1.txt",
+        "mail_theme": "",
+        "mail_txt": "помогите пожалуйста не работает система",
     }
+    result = classifier_with_config.classify(mail)
+    assert result["category"] == "support"
+    assert "помогите" in result["matched_keywords"]
 
 
-@pytest.fixture
-def classifier_with_config(tmp_path, sample_categories):
-    config_dir = tmp_path / "data" / "config"
-    config_dir.mkdir(parents=True, exist_ok=True)
-    config_file = config_dir / "categories.json"
-    config_file.write_text(json.dumps(sample_categories, ensure_ascii=False), encoding="utf-8")
-
-    with patch.object(MailClassifier, "__init__", lambda self: None):
-        clf = MailClassifier.__new__(MailClassifier)
-        clf.config_path = config_file
-        clf.config = sample_categories
-        clf.default_category = sample_categories["default_category"]
-        clf.unreadable_category = sample_categories["unreadable_category"]
-        clf.min_category_score = sample_categories["min_category_score"]
-        clf.theme_weight = sample_categories["theme_weight"]
-        clf.categories = sample_categories["categories"]
-    return clf
+def test_classify_by_theme_keyword_with_weight(classifier_with_config):
+    mail = {
+        "mail_name": "mail_2.txt",
+        "mail_theme": "срочно ошибка",
+        "mail_txt": "",
+    }
+    result = classifier_with_config.classify(mail)
+    assert result["category"] == "critical"
+    assert result["category_score"] == 4
+    assert result["theme_matches_count"] == 2
 
 
-@pytest.fixture
-def file_manager(tmp_path):
-    fm = FileManager.__new__(FileManager)
-    fm.processed_dir = tmp_path / "data" / "processed"
-    fm.processed_dir.mkdir(parents=True, exist_ok=True)
-    return fm
+def test_classify_other_if_no_keywords(classifier_with_config):
+    mail = {
+        "mail_name": "mail_3.txt",
+        "mail_theme": "обычное письмо",
+        "mail_txt": "информация без ключевых слов",
+    }
+    result = classifier_with_config.classify(mail)
+    assert result["category"] == "other"
+    assert result["category_score"] == 0
+
+
+def test_priority_used_when_scores_are_equal(classifier_with_config):
+    mail = {
+        "mail_name": "mail_4.txt",
+        "mail_theme": "",
+        "mail_txt": "ошибка проблема",
+    }
+    result = classifier_with_config.classify(mail)
+    assert result["category"] == "critical"

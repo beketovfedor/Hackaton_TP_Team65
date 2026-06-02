@@ -4,7 +4,7 @@ from pathlib import Path
 
 class FileManager:
     def __init__(self):
-        base_dir = Path(__file__).resolve().parent.parent
+        base_dir = Path(__file__).resolve().parents[2]
         processed_dir = base_dir / "data" / "processed"
         self.processed_dir = Path(processed_dir)
         self.processed_dir.mkdir(parents=True, exist_ok=True)

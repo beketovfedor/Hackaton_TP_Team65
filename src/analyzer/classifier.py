@@ -4,7 +4,7 @@ from pathlib import Path
 
 class MailClassifier:
     def __init__(self):
-        base_dir = Path(__file__).resolve().parent.parent
+        base_dir = Path(__file__).resolve().parents[2]
         config_path = base_dir / "data" / "config" / "categories.json"
 
         self.config_path = Path(config_path)

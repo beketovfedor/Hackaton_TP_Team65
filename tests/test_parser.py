@@ -1,9 +1,7 @@
-import pytest
-from src.processing.parser import parse_file
+from src.parser import parse_file
 
 
 class TestParser:
-
     def test_read_plain_text_file(self, tmp_path):
         f = tmp_path / "mail.txt"
         f.write_text("Subject: Check\n\nРебят, тут такое дело, надо потестить парсер срочно", encoding="utf-8")
@@ -20,7 +18,7 @@ class TestParser:
 
     def test_nonexistent_file_returns_none(self, tmp_path):
         res = parse_file(str(tmp_path / "ghost_file_123.txt"))
-        assert None is res
+        assert res is None
 
     def test_binary_file_returns_none(self, tmp_path):
         f = tmp_path / "file.bin"

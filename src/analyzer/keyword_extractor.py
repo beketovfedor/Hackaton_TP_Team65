@@ -113,7 +113,7 @@ class KeywordExtractor:
 
 
 def save_keywords_to_json(result):
-    base_dir = Path(__file__).resolve().parent.parent
+    base_dir = Path(__file__).resolve().parents[2]
     file_path = base_dir / "data" / "config" / "candidate_keywords.json"
     file_path.parent.mkdir(parents=True, exist_ok=True)
     with open(file_path, "w", encoding="utf-8") as file:

@@ -4,8 +4,8 @@ from pathlib import Path
 
 def load_stopwords(filepath=None):
     if filepath is None:
-        base_dir = Path(__file__).resolve().parent
-        filepath = ( base_dir.parent / "data" / "stopwords.txt")
+        base_dir = Path(__file__).resolve().parents[2]
+        filepath = base_dir / "data" / "stopwords.txt"
     stopwords = set()
     try:
         with open(filepath, "r", encoding="utf-8") as f:

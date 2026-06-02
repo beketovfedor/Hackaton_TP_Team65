@@ -1,5 +1,7 @@
 import pytest
-from src.processing.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
+import src.cleaner as cleaner
+from src.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
+
 
 @pytest.fixture(autouse=True)
 def mock_cleaner_stopwords():
@@ -8,8 +10,8 @@ def mock_cleaner_stopwords():
     yield
     cleaner.rubbish = old_rubbish
 
-class TestCleaner:
 
+class TestCleaner:
     def test_clean_text_lowercases(self):
         res = clean_text("HELLO WORLD", remove_stopwords=False)
         assert res == "hello world"
