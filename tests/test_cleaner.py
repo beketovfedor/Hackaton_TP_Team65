@@ -1,6 +1,5 @@
 import pytest
-import src.cleaner
-from src.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
+from src.processing.cleaner import clean_text, process_raw_email, translit_to_cyrillic, _extract_fields
 
 @pytest.fixture(autouse=True)
 def mock_cleaner_stopwords():
